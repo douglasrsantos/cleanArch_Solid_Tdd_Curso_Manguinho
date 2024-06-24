@@ -4,6 +4,7 @@ import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
 import 'remote_authentication_test.mocks.dart';
+@GenerateNiceMocks([MockSpec<HttpClient>()])
 
 class RemoteAuthentication {
   final HttpClient httpClient;
@@ -29,12 +30,9 @@ abstract class HttpClient {
   });
 }
 
-@GenerateNiceMocks([MockSpec<HttpClient>()])
-// import 'httpClient.mocks.dart';
-// class HttpClientSpy extends Mock implements HttpClient {}
 
 void main() {
-  late HttpClient httpClient;
+  late MockHttpClient httpClient;
   late RemoteAuthentication sut;
   late String url;
 
