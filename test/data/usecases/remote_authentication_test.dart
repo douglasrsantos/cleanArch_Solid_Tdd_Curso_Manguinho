@@ -5,6 +5,7 @@ import 'package:test/test.dart';
 
 import 'remote_authentication_test.mocks.dart';
 
+import 'package:fordev/domain/helpers/helpers.dart';
 import 'package:fordev/domain/usecases/usecases.dart';
 
 import 'package:fordev/data/usecases/usecases.dart';
@@ -32,7 +33,6 @@ void main() {
         email: faker.internet.email(),
         secret: faker.internet.password(),
       );
-
       await sut.auth(params);
 
       verify(httpClient.request(
@@ -43,6 +43,25 @@ void main() {
           'password': params.secret,
         },
       ));
+    },
+  );
+
+  test(
+    'Should throw UnexpectedError if HttpClient returns 400',
+    () async {
+      when(httpClient.request(
+              url: anyNamed('url'),
+              method: anyNamed('method'),
+              body: anyNamed('body')))
+          .thenThrow(HttpError.badRequest);
+
+      final params = AuthenticationParams(
+        email: faker.internet.email(),
+        secret: faker.internet.password(),
+      );
+      final future = sut.auth(params);
+
+      expect(future, throwsA(DomainError.unexpected));
     },
   );
 }
