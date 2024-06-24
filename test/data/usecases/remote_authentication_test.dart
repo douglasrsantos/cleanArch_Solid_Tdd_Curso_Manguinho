@@ -31,34 +31,51 @@ void main() {
     );
   });
 
-  test(
-    'Should call HttpClient with correct URL',
-    () async {
-      await sut.auth(params);
+  group('Group of tests of http requests', () {
+    test(
+      'Should call HttpClient with correct URL',
+      () async {
+        await sut.auth(params);
 
-      verify(httpClient.request(
-        url: url,
-        method: 'post',
-        body: {
-          'email': params.email,
-          'password': params.secret,
-        },
-      ));
-    },
-  );
+        verify(httpClient.request(
+          url: url,
+          method: 'post',
+          body: {
+            'email': params.email,
+            'password': params.secret,
+          },
+        ));
+      },
+    );
 
-  test(
-    'Should throw UnexpectedError if HttpClient returns 400',
-    () async {
-      when(httpClient.request(
-              url: anyNamed('url'),
-              method: anyNamed('method'),
-              body: anyNamed('body')))
-          .thenThrow(HttpError.badRequest);
+    test(
+      'Should throw UnexpectedError if HttpClient returns 400',
+      () async {
+        when(httpClient.request(
+                url: anyNamed('url'),
+                method: anyNamed('method'),
+                body: anyNamed('body')))
+            .thenThrow(HttpError.badRequest);
 
-      final future = sut.auth(params);
+        final future = sut.auth(params);
 
-      expect(future, throwsA(DomainError.unexpected));
-    },
-  );
+        expect(future, throwsA(DomainError.unexpected));
+      },
+    );
+
+    test(
+      'Should throw UnexpectedError if HttpClient returns 404',
+      () async {
+        when(httpClient.request(
+                url: anyNamed('url'),
+                method: anyNamed('method'),
+                body: anyNamed('body')))
+            .thenThrow(HttpError.notFound);
+
+        final future = sut.auth(params);
+
+        expect(future, throwsA(DomainError.unexpected));
+      },
+    );
+  });
 }
