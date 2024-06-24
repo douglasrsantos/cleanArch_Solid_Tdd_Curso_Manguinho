@@ -16,6 +16,7 @@ void main() {
   late MockHttpClient httpClient;
   late RemoteAuthentication sut;
   late String url;
+  late AuthenticationParams params;
 
   setUp(() {
     httpClient = MockHttpClient();
@@ -24,15 +25,15 @@ void main() {
       httpClient: httpClient,
       url: url,
     );
+    params = AuthenticationParams(
+      email: faker.internet.email(),
+      secret: faker.internet.password(),
+    );
   });
 
   test(
     'Should call HttpClient with correct URL',
     () async {
-      final params = AuthenticationParams(
-        email: faker.internet.email(),
-        secret: faker.internet.password(),
-      );
       await sut.auth(params);
 
       verify(httpClient.request(
@@ -55,10 +56,6 @@ void main() {
               body: anyNamed('body')))
           .thenThrow(HttpError.badRequest);
 
-      final params = AuthenticationParams(
-        email: faker.internet.email(),
-        secret: faker.internet.password(),
-      );
       final future = sut.auth(params);
 
       expect(future, throwsA(DomainError.unexpected));
