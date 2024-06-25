@@ -20,7 +20,7 @@ class HttpAdapter {
       'content-type': 'application/json',
       'accept': 'application/json',
     };
-    
+
     await client.post(
       Uri.parse(url),
       headers: headers,
@@ -29,12 +29,18 @@ class HttpAdapter {
 }
 
 void main() {
+  late HttpAdapter sut;
+  late MockClient client;
+  late String url;
+
+  setUp(() {
+    client = MockClient();
+    sut = HttpAdapter(client);
+    url = faker.internet.httpUrl();
+  });
+  
   group('post', () {
     test('Should call post with correct values', () async {
-      final client = MockClient();
-      final sut = HttpAdapter(client);
-      final url = faker.internet.httpUrl();
-
       await sut.request(url: url, method: 'post');
 
       verify(client.post(
