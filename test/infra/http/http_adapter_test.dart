@@ -17,7 +17,7 @@ class HttpAdapter implements HttpClient {
   HttpAdapter(this.client);
 
   @override
-  Future<Map> request({
+  Future<Map?> request({
     required String url,
     required String method,
     Map? body,
@@ -35,7 +35,7 @@ class HttpAdapter implements HttpClient {
       body: jsonBody,
     );
 
-    return jsonDecode(response.body);
+    return response.body.isEmpty ? null : jsonDecode(response.body);
   }
 }
 
@@ -84,13 +84,22 @@ void main() {
       ));
     });
 
-    test('Should return dataif post return 200', () async {
+    test('Should return data if post return 200', () async {
       when(client.post(any, headers: anyNamed('headers')))
           .thenAnswer((_) async => Response('{"any_key":"any_value"}', 200));
 
       final response = await sut.request(url: url, method: 'post');
 
       expect(response, {'any_key': 'any_value'});
+    });
+
+    test('Should return null if post return 200 with no data', () async {
+      when(client.post(any, headers: anyNamed('headers')))
+          .thenAnswer((_) async => Response('', 200));
+
+      final response = await sut.request(url: url, method: 'post');
+
+      expect(response, null);
     });
   });
 }
