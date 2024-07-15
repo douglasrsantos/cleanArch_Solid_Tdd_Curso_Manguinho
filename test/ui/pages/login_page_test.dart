@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:faker/faker.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
@@ -11,12 +13,20 @@ import 'package:fordev/ui/pages/pages.dart';
 @GenerateNiceMocks([MockSpec<LoginPresenter>()])
 void main() {
   LoginPresenter? presenter;
+  StreamController<String>? emailErrorController;
 
   Future<void> loadPage(WidgetTester tester) async {
     presenter = MockLoginPresenter();
+    emailErrorController = StreamController<String>();
+    when(presenter?.emailErrorStream)
+        .thenAnswer((_) => emailErrorController?.stream);
     final loginPage = MaterialApp(home: LoginPage(presenter: presenter!));
     await tester.pumpWidget(loginPage);
   }
+
+  tearDown(() {
+    emailErrorController?.close();
+  });
 
   testWidgets('Should load with correct initial state',
       (WidgetTester tester) async {
@@ -51,9 +61,19 @@ void main() {
     final email = faker.internet.email();
     await tester.enterText(find.bySemanticsLabel('Email'), email);
     verify(presenter?.validateEmail(email));
-  
-  final password = faker.internet.password();
+
+    final password = faker.internet.password();
     await tester.enterText(find.bySemanticsLabel('Senha'), password);
     verify(presenter?.validatePassword(password));
+  });
+
+  testWidgets('Should present error if email is invalid',
+      (WidgetTester tester) async {
+    await loadPage(tester);
+
+    emailErrorController?.add('any error');
+    await tester.pump();
+
+    expect(find.text('any error'), findsOneWidget);
   });
 }
