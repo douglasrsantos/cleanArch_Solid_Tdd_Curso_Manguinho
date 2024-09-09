@@ -56,24 +56,64 @@ void main() {
 
   testWidgets('Should call validate with correct values',
       (WidgetTester tester) async {
+    // Carrega a tela que será testada
     await loadPage(tester);
 
+    //Simula o e-mail que será inserido
     final email = faker.internet.email();
+    //Mostra qual campo eu vou testar pelo {find.bySemantics} e insere o valor nele {email}
     await tester.enterText(find.bySemanticsLabel('Email'), email);
+    //Verifica se sempre que chamar o presenter o email simulado vai ser o mesmo que aparece nele
     verify(presenter?.validateEmail(email));
 
+    //Simula o password que será inserido
     final password = faker.internet.password();
+    //Mostra qual campo eu vou testar pelo {find.bySemantics} e insere o valor nele {Senha}
     await tester.enterText(find.bySemanticsLabel('Senha'), password);
+    //Verifica se sempre que chamar o presenter a senha simulada vai ser a mesma que aparece nele
     verify(presenter?.validatePassword(password));
   });
 
   testWidgets('Should present error if email is invalid',
       (WidgetTester tester) async {
+        //Carrega a tela que será testada
     await loadPage(tester);
 
+    //Como a tela será atualizada através de uma Stream, então adiciona o texto digitado recebido no presenter a Stream
     emailErrorController?.add('any error');
+    //Faz a tela atualizaro estado
     await tester.pump();
 
+    //Espera que encontre o texto mockado em apenas um widget
     expect(find.text('any error'), findsOneWidget);
+  });
+
+  testWidgets('Should present no error if email is valid',
+      (WidgetTester tester) async {
+    await loadPage(tester);
+
+    emailErrorController.add(null);
+    await tester.pump();
+
+    expect(
+      find.descendant(
+          of: find.bySemanticsLabel('Email'), matching: find.byType(Text)),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('Should present no error if email is valid',
+      (WidgetTester tester) async {
+    await loadPage(tester);
+
+    await tester.pump();
+
+    expect(
+      find.descendant(
+        of: find.bySemanticsLabel('Email'),
+        matching: find.byType(Text),
+      ),
+      findsOneWidget,
+    );
   });
 }
