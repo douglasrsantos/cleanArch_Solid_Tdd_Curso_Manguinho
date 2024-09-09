@@ -12,20 +12,25 @@ import 'package:fordev/ui/pages/pages.dart';
 
 @GenerateNiceMocks([MockSpec<LoginPresenter>()])
 void main() {
-  LoginPresenter? presenter;
-  StreamController<String>? emailErrorController;
+  MockLoginPresenter? presenter;
+  StreamController<String?>? emailErrorController;
+  StreamController<String?>? passwordErrorController;
 
   Future<void> loadPage(WidgetTester tester) async {
     presenter = MockLoginPresenter();
-    emailErrorController = StreamController<String>();
+    emailErrorController = StreamController<String?>();
+    passwordErrorController = StreamController<String?>();
     when(presenter?.emailErrorStream)
         .thenAnswer((_) => emailErrorController?.stream);
-    final loginPage = MaterialApp(home: LoginPage(presenter: presenter!));
+    when(presenter?.passwordErrorStream)
+        .thenAnswer((_) => passwordErrorController?.stream);
+    final loginPage = MaterialApp(home: LoginPage(presenter: presenter));
     await tester.pumpWidget(loginPage);
   }
 
   tearDown(() {
     emailErrorController?.close();
+    passwordErrorController?.close();
   });
 
   testWidgets('Should load with correct initial state',
@@ -76,7 +81,7 @@ void main() {
 
   testWidgets('Should present error if email is invalid',
       (WidgetTester tester) async {
-        //Carrega a tela que será testada
+    //Carrega a tela que será testada
     await loadPage(tester);
 
     //Como a tela será atualizada através de uma Stream, então adiciona o texto digitado recebido no presenter a Stream
@@ -92,9 +97,10 @@ void main() {
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    emailErrorController.add(null);
+    emailErrorController?.add(null);
     await tester.pump();
 
+    //Espera encontrar apenas um elemento de texto dentro do campo Email
     expect(
       find.descendant(
           of: find.bySemanticsLabel('Email'), matching: find.byType(Text)),
@@ -102,18 +108,13 @@ void main() {
     );
   });
 
-  testWidgets('Should present no error if email is valid',
+  testWidgets('Should present error if password is invalid',
       (WidgetTester tester) async {
     await loadPage(tester);
 
+    passwordErrorController?.add('any error');
     await tester.pump();
 
-    expect(
-      find.descendant(
-        of: find.bySemanticsLabel('Email'),
-        matching: find.byType(Text),
-      ),
-      findsOneWidget,
-    );
+    expect(find.text('any error'), findsOneWidget);
   });
 }

@@ -26,11 +26,18 @@ import 'package:mockito/mockito.dart' as _i1;
 /// See the documentation for Mockito's code generation for more information.
 class MockLoginPresenter extends _i1.Mock implements _i2.LoginPresenter {
   @override
-  _i3.Stream<String> get emailErrorStream => (super.noSuchMethod(
+  _i3.Stream<String?> get emailErrorStream => (super.noSuchMethod(
         Invocation.getter(#emailErrorStream),
-        returnValue: _i3.Stream<String>.empty(),
-        returnValueForMissingStub: _i3.Stream<String>.empty(),
-      ) as _i3.Stream<String>);
+        returnValue: _i3.Stream<String?>.empty(),
+        returnValueForMissingStub: _i3.Stream<String?>.empty(),
+      ) as _i3.Stream<String?>);
+
+  @override
+  _i3.Stream<String?> get passwordErrorStream => (super.noSuchMethod(
+        Invocation.getter(#passwordErrorStream),
+        returnValue: _i3.Stream<String?>.empty(),
+        returnValueForMissingStub: _i3.Stream<String?>.empty(),
+      ) as _i3.Stream<String?>);
 
   @override
   void validateEmail(String? email) => super.noSuchMethod(
