@@ -242,11 +242,20 @@ void main() {
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    //emite true e false para habilitar e desabilitar o loading
+    //emite erro para quando a autenticação falha
     mainErrorController?.add('main error');
     await tester.pump();
 
-    //espera encontrar um widget CircularProgressIndicator
+    //espera encontrar um widget que contenha a mesma mensagem de erro emitida na stream
     expect(find.text('main error'), findsOneWidget);
+  });
+
+  testWidgets('Should close streams on dispose', (WidgetTester tester) async {
+    await loadPage(tester);
+
+    //garante que o código seja executado antes da view ser destruída
+    addTearDown(() {
+      verify(presenter?.dispose()).called(1);
+    });
   });
 }
