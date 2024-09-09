@@ -57,8 +57,8 @@ class LoginPage extends StatelessWidget {
                                 color: Theme.of(context).primaryColorLight,
                               ),
                               errorText: snapshot.data?.isEmpty == true
-                              ? null
-                              : snapshot.data,
+                                  ? null
+                                  : snapshot.data,
                             ),
                             obscureText: true,
                             onChanged: presenter?.validatePassword,
@@ -66,14 +66,14 @@ class LoginPage extends StatelessWidget {
                         }),
                   ),
                   StreamBuilder<bool>(
-                    stream: presenter?.isFormValidStream,
-                    builder: (context, snapshot) {
-                      return ElevatedButton(
-                        onPressed: snapshot.data == true ? (){} : null,
-                        child: const Text('ENTRAR'),
-                      );
-                    }
-                  ),
+                      stream: presenter?.isFormValidStream,
+                      builder: (context, snapshot) {
+                        return ElevatedButton(
+                          onPressed:
+                              snapshot.data == true ? presenter?.auth : null,
+                          child: const Text('ENTRAR'),
+                        );
+                      }),
                   TextButton.icon(
                     onPressed: () {},
                     icon: const Icon(Icons.person),
