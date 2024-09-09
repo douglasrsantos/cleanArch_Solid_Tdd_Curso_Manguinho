@@ -16,18 +16,22 @@ void main() {
   StreamController<String?>? emailErrorController;
   StreamController<String?>? passwordErrorController;
   StreamController<bool>? isFormValidController;
+  StreamController<bool>? isLoadingController;
 
   Future<void> loadPage(WidgetTester tester) async {
     presenter = MockLoginPresenter();
     emailErrorController = StreamController<String?>();
     passwordErrorController = StreamController<String?>();
     isFormValidController = StreamController<bool>();
+    isLoadingController = StreamController<bool>();
     when(presenter?.emailErrorStream)
         .thenAnswer((_) => emailErrorController?.stream);
     when(presenter?.passwordErrorStream)
         .thenAnswer((_) => passwordErrorController?.stream);
     when(presenter?.isFormValidStream)
         .thenAnswer((_) => isFormValidController?.stream);
+    when(presenter?.isLoadingStream)
+        .thenAnswer((_) => isLoadingController?.stream);
     final loginPage = MaterialApp(home: LoginPage(presenter: presenter));
     await tester.pumpWidget(loginPage);
   }
@@ -36,6 +40,7 @@ void main() {
     emailErrorController?.close();
     passwordErrorController?.close();
     isFormValidController?.close();
+    isLoadingController?.close();
   });
 
   testWidgets('Should load with correct initial state',
@@ -201,5 +206,16 @@ void main() {
 
     //verifica se ao clicar no botão a função de autenticação é chamada apenas 1 vez
     verify(presenter?.auth()).called(1);
+  });
+
+  testWidgets('Should present loading', (WidgetTester tester) async {
+    await loadPage(tester);
+
+    //emite true para habilitar o loading
+    isLoadingController?.add(true);
+    await tester.pump();
+
+    //espera encontrar um widget CircularProgressIndicator
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
   });
 }
