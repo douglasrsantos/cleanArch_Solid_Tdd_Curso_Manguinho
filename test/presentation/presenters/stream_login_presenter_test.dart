@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:faker/faker.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
@@ -9,13 +11,27 @@ abstract class Validation {
   String? validate({required String field, required String value});
 }
 
+class LoginState {
+  String? emailError;
+}
+
 class StreamLoginPresenter {
   final Validation validation;
+  //criado apenas um controlador para todas as streams em produção porque o StreamController utiliza muita memória
+  //Utilizado broadcast porque vai ter mais de um listener ouvindo no mesmo controlador
+  final _controller = StreamController<LoginState>.broadcast();
+
+  var _state = LoginState();
+
+//Pega apenas o emailError para cada vez que ele alterar fazer uma ação
+  Stream<String> get emailErrorStream =>
+      _controller.stream.map((state) => state.emailError!);
 
   StreamLoginPresenter({required this.validation});
 
   void validateEmail(String email) {
-    validation.validate(field: 'email', value: email);
+    _state.emailError = validation.validate(field: 'email', value: email);
+    _controller.add(_state);
   }
 }
 
@@ -35,5 +51,20 @@ void main() {
     sut.validateEmail(email!);
 
     verify(validation.validate(field: 'email', value: email)).called(1);
+  });
+
+  test('Should emit email error if validation fails', () {
+    //TESTANDO STREAM
+    //mocka o erro que será exibido na função
+    when(validation.validate(
+            field: anyNamed('field'), value: anyNamed('value')))
+        .thenReturn('error');
+
+    //Se colocar o expect ou verify depois da função a stream jávai ter sido executada, não possibilitando assim o teste.
+    //Por isso se coloca esse expect aqui antes
+    expectLater(sut.emailErrorStream, emits('error'));
+
+    //executa a função
+    sut.validateEmail(email!);
   });
 }
