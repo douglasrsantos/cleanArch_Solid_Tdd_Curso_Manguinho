@@ -21,12 +21,18 @@ class StreamLoginPresenter {
 
 @GenerateNiceMocks([MockSpec<Validation>()])
 void main() {
-  test('Should call validation with correct email', () {
-    final validation = MockValidation();
-    final sut = StreamLoginPresenter(validation: validation);
-    final email = faker.internet.email();
+  late StreamLoginPresenter sut;
+  late MockValidation validation;
+  String? email;
 
-    sut.validateEmail(email);
+  setUp(() {
+    validation = MockValidation();
+    sut = StreamLoginPresenter(validation: validation);
+    email = faker.internet.email();
+  });
+
+  test('Should call validation with correct email', () {
+    sut.validateEmail(email!);
 
     verify(validation.validate(field: 'email', value: email)).called(1);
   });
