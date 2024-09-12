@@ -1,15 +1,14 @@
 import 'dart:async';
 
 import 'package:faker/faker.dart';
+import 'package:fordev/presentation/protocols/validation.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 import 'package:test/test.dart';
 
 import 'stream_login_presenter_test.mocks.dart';
 
-abstract class Validation {
-  String? validate({required String field, required String value});
-}
+
 
 class LoginState {
   String? emailError;
