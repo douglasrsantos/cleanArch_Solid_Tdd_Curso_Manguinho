@@ -17,8 +17,8 @@ class StreamLoginPresenter {
 
 //Pega apenas o emailError para cada vez que ele alterar fazer uma ação
 //.distinct() não deixa emitir dois valores seguidos iguais
-  Stream<String> get emailErrorStream =>
-      _controller.stream.map((state) => state.emailError!).distinct();
+  Stream<String?> get emailErrorStream =>
+      _controller.stream.map((state) => state.emailError).distinct();
   Stream<bool> get isFormValidStream =>
       _controller.stream.map((state) => state.isFormValid).distinct();
 

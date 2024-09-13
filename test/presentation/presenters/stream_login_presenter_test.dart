@@ -53,4 +53,20 @@ void main() {
     sut.validateEmail(email!);
     sut.validateEmail(email!);
   });
+
+  test('Should emit null if validation succeeds', () {
+    //Toda vez que a stream mudar captura o erro
+    sut.emailErrorStream.listen(
+      //expectAsync: só vai passar se a condição for verdade e se executar apenas 1 vez
+      expectAsync1((error) => expect(error, null)),
+    );
+    sut.isFormValidStream.listen(
+      //expectAsync: só vai passar se a condição for verdade e se executar apenas 1 vez
+      expectAsync1((isValid) => expect(isValid, false)),
+    );
+
+    //executa a função
+    sut.validateEmail(email!);
+    sut.validateEmail(email!);
+  });
 }
