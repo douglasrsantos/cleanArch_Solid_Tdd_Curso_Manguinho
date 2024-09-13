@@ -39,11 +39,18 @@ void main() {
     //mocka o erro que será exibido na função
     mockValidation(value: 'error');
 
-    //Se colocar o expect ou verify depois da função a stream jávai ter sido executada, não possibilitando assim o teste.
-    //Por isso se coloca esse expect aqui antes
-    expectLater(sut.emailErrorStream, emits('error'));
+    //Toda vez que a stream mudar captura o erro
+    sut.emailErrorStream.listen(
+      //expectAsync: só vai passar se a condição for verdade e se executar apenas 1 vez
+      expectAsync1((error) => expect(error, 'error')),
+    );
+    sut.isFormValidStream.listen(
+      //expectAsync: só vai passar se a condição for verdade e se executar apenas 1 vez
+      expectAsync1((isValid) => expect(isValid, false)),
+    );
 
     //executa a função
+    sut.validateEmail(email!);
     sut.validateEmail(email!);
   });
 }

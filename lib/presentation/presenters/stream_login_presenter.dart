@@ -4,6 +4,7 @@ import 'package:fordev/presentation/protocols/protocols.dart';
 
 class LoginState {
   String? emailError;
+  bool get isFormValid => false;
 }
 
 class StreamLoginPresenter {
@@ -15,8 +16,11 @@ class StreamLoginPresenter {
   final _state = LoginState();
 
 //Pega apenas o emailError para cada vez que ele alterar fazer uma ação
+//.distinct() não deixa emitir dois valores seguidos iguais
   Stream<String> get emailErrorStream =>
-      _controller.stream.map((state) => state.emailError!);
+      _controller.stream.map((state) => state.emailError!).distinct();
+  Stream<bool> get isFormValidStream =>
+      _controller.stream.map((state) => state.isFormValid).distinct();
 
   StreamLoginPresenter({required this.validation});
 
