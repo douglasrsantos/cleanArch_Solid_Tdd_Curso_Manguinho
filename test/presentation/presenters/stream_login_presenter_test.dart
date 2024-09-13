@@ -77,4 +77,24 @@ void main() {
 
     verify(validation.validate(field: 'password', value: password)).called(1);
   });
+
+  test('Should emit password error if validation fails', () {
+    //TESTANDO STREAM
+    //mocka o erro que será exibido na função
+    mockValidation(value: 'error');
+
+    //Toda vez que a stream mudar captura o erro
+    sut.passwordErrorStream.listen(
+      //expectAsync: só vai passar se a condição for verdade e se executar apenas 1 vez
+      expectAsync1((error) => expect(error, 'error')),
+    );
+    sut.isFormValidStream.listen(
+      //expectAsync: só vai passar se a condição for verdade e se executar apenas 1 vez
+      expectAsync1((isValid) => expect(isValid, false)),
+    );
+
+    //executa a função
+    sut.validatePassword(password!);
+    sut.validatePassword(password!);
+  });
 }
