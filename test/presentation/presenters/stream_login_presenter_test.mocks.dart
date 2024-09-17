@@ -3,7 +3,11 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:fordev/presentation/protocols/validation.dart' as _i2;
+import 'dart:async' as _i5;
+
+import 'package:fordev/domain/entities/entities.dart' as _i2;
+import 'package:fordev/domain/usecases/authentication.dart' as _i4;
+import 'package:fordev/presentation/protocols/validation.dart' as _i3;
 import 'package:mockito/mockito.dart' as _i1;
 
 // ignore_for_file: type=lint
@@ -19,10 +23,20 @@ import 'package:mockito/mockito.dart' as _i1;
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
+class _FakeAccountEntity_0 extends _i1.SmartFake implements _i2.AccountEntity {
+  _FakeAccountEntity_0(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
 /// A class which mocks [Validation].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockValidation extends _i1.Mock implements _i2.Validation {
+class MockValidation extends _i1.Mock implements _i3.Validation {
   @override
   String? validate({
     required String? field,
@@ -39,4 +53,33 @@ class MockValidation extends _i1.Mock implements _i2.Validation {
         ),
         returnValueForMissingStub: null,
       ) as String?);
+}
+
+/// A class which mocks [Authentication].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockAuthentication extends _i1.Mock implements _i4.Authentication {
+  @override
+  _i5.Future<_i2.AccountEntity> auth(_i4.AuthenticationParams? params) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #auth,
+          [params],
+        ),
+        returnValue: _i5.Future<_i2.AccountEntity>.value(_FakeAccountEntity_0(
+          this,
+          Invocation.method(
+            #auth,
+            [params],
+          ),
+        )),
+        returnValueForMissingStub:
+            _i5.Future<_i2.AccountEntity>.value(_FakeAccountEntity_0(
+          this,
+          Invocation.method(
+            #auth,
+            [params],
+          ),
+        )),
+      ) as _i5.Future<_i2.AccountEntity>);
 }

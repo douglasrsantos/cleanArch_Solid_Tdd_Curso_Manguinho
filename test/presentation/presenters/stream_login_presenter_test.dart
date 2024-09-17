@@ -3,15 +3,19 @@ import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 import 'package:test/test.dart';
 
+import 'package:fordev/domain/usecases/usecases.dart';
+
 import 'package:fordev/presentation/presenters/presenters.dart';
 import 'package:fordev/presentation/protocols/protocols.dart';
 
 import 'stream_login_presenter_test.mocks.dart';
 
 @GenerateNiceMocks([MockSpec<Validation>()])
+@GenerateNiceMocks([MockSpec<Authentication>()])
 void main() {
   late StreamLoginPresenter sut;
   late MockValidation validation;
+  late MockAuthentication authentication;
   String? email;
   String? password;
 
@@ -24,7 +28,8 @@ void main() {
 
   setUp(() {
     validation = MockValidation();
-    sut = StreamLoginPresenter(validation: validation);
+    authentication = MockAuthentication();
+    sut = StreamLoginPresenter(validation: validation, authentication: authentication);
     email = faker.internet.email();
     password = faker.internet.password();
     mockValidation();
@@ -131,5 +136,16 @@ void main() {
     sut.validateEmail(email!);
     await Future.delayed(Duration.zero);
     sut.validatePassword(password!);
+  });
+
+  test('Should call Authentication with correct values', () async {
+    sut.validateEmail(email!);
+    sut.validatePassword(password!);
+
+    sut.auth();
+
+    verify(authentication
+            .auth(AuthenticationParams(email: email!, secret: password!)))
+        .called(1);
   });
 }

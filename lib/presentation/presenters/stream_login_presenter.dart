@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fordev/domain/usecases/usecases.dart';
 import 'package:fordev/presentation/protocols/protocols.dart';
 
 class LoginState {
@@ -16,6 +17,7 @@ class LoginState {
 
 class StreamLoginPresenter {
   final Validation validation;
+  final Authentication authentication;
   //criado apenas um controlador para todas as streams em produção porque o StreamController utiliza muita memória
   //Utilizado broadcast porque vai ter mais de um listener ouvindo no mesmo controlador
   final _controller = StreamController<LoginState>.broadcast();
@@ -31,7 +33,8 @@ class StreamLoginPresenter {
   Stream<bool> get isFormValidStream =>
       _controller.stream.map((state) => state.isFormValid).distinct();
 
-  StreamLoginPresenter({required this.validation});
+  StreamLoginPresenter(
+      {required this.validation, required this.authentication});
 
   void _update() => _controller.add(_state);
 
@@ -46,5 +49,10 @@ class StreamLoginPresenter {
     _state.passwordError =
         validation.validate(field: 'password', value: password);
     _update();
+  }
+
+  Future<void> auth() async {
+    await authentication.auth(
+        AuthenticationParams(email: _state.email!, secret: _state.password!));
   }
 }
