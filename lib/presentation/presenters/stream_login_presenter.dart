@@ -1,7 +1,10 @@
 import 'dart:async';
 
+import 'package:fordev/ui/pages/pages.dart';
+
 import 'package:fordev/domain/helpers/helpers.dart';
 import 'package:fordev/domain/usecases/usecases.dart';
+
 import 'package:fordev/presentation/protocols/protocols.dart';
 
 class LoginState {
@@ -18,7 +21,7 @@ class LoginState {
       password != null;
 }
 
-class StreamLoginPresenter {
+class StreamLoginPresenter implements LoginPresenter {
   final Validation validation;
   final Authentication authentication;
   //criado apenas um controlador para todas as streams em produção porque o StreamController utiliza muita memória
@@ -30,14 +33,19 @@ class StreamLoginPresenter {
 
 //Pega apenas o emailError/passwordError/isFormValid para cada vez que ele alterar fazer uma ação
 //.distinct() não deixa emitir dois valores seguidos iguais
+  @override
   Stream<String?>? get emailErrorStream =>
       _controller?.stream.map((state) => state.emailError).distinct();
+  @override
   Stream<String?>? get passwordErrorStream =>
       _controller?.stream.map((state) => state.passwordError).distinct();
+  @override
   Stream<String?>? get mainErrorStream =>
       _controller?.stream.map((state) => state.mainError).distinct();
+  @override
   Stream<bool>? get isFormValidStream =>
       _controller?.stream.map((state) => state.isFormValid).distinct();
+  @override
   Stream<bool>? get isLoadingStream =>
       _controller?.stream.map((state) => state.isLoading).distinct();
 
