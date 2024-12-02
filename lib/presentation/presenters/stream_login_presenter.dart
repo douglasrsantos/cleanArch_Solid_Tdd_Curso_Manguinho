@@ -54,12 +54,14 @@ class StreamLoginPresenter implements LoginPresenter {
 
   void _update() => _controller?.add(_state);
 
+  @override
   void validateEmail(String email) {
     _state.email = email;
     _state.emailError = validation.validate(field: 'email', value: email);
     _update();
   }
 
+  @override
   void validatePassword(String password) {
     _state.password = password;
     _state.passwordError =
@@ -67,6 +69,7 @@ class StreamLoginPresenter implements LoginPresenter {
     _update();
   }
 
+  @override
   Future<void> auth() async {
     _state.isLoading = true;
     _update();
@@ -80,6 +83,7 @@ class StreamLoginPresenter implements LoginPresenter {
     _update();
   }
 
+  @override
   void dispose() {
     _controller?.close();
     _controller = null;
